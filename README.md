@@ -7,10 +7,24 @@ This project was created to manage and deploy my dotfiles on new machines and ke
 With this script, you can centralise the management of your dotfiles and make them portable so if you need to setup a new machine you can quickly deploy them with minimal effort.
 
 ## TOC
-* [Use cases](#use-cases)  
-* [Pre-requisites](#pre-requisites)  
-* [Usage](#usage)  
-* [Optional features](#optional-features)  
+* [Installation](#installation)
+* [Use cases](#use-cases)
+* [Pre-requisites](#pre-requisites)
+* [Usage](#usage)
+* [Optional features](#optional-features)
+
+## Installation
+1. Clone and install the project dependencies
+```
+git clone https://github.com/danielmacuare/dotifles.git
+pip3 install -r requirements.txt
+```
+2 - Throw all your dotfiles in any of the following folders:
+```
+globals/
+home/
+work/
+```
 
 
 ## Use cases
