@@ -27,7 +27,7 @@ With this script, you can centralise the management of your dotfiles and make th
 **Note:** Before making any changes, the script will backup your current files in the same folder that they live on.
 
 ## Pre-requisites
-- [Python 3.6](https://gist.github.com/danielmacuare/9b916540158040701aebaaf994bf88e7) + pip
+- [Python 3.6 onwards](https://gist.github.com/danielmacuare/9b916540158040701aebaaf994bf88e7) + pip
   
 ## Usage
 ### 1. Clone the repo and install the requirements.
