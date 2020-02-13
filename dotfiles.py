@@ -18,22 +18,6 @@ from terminaltables import AsciiTable
 ./dotfiles.py -e globals
 """
 
-# TODO
-# MUST
-# 
-
-# Nice to have
-# Breakdown the spagetti code
-# Document all functions properly
-# Logging all print statements
-# Use generators as much as you can
-# Use list comprehensions all you can
-
-
-# Future improvements:
-# Error handling on table_to_json_file() checking length of both lists.
-
-# text = f'Daniel is {termcolor.colored((adjective), "green")}'
 
 ERROR_PREFIX = colored('ERROR:', 'red')
 WARNING_PREFIX = colored('WARNING:', 'cyan')
