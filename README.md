@@ -65,8 +65,8 @@ With this script, you can centralise the management of your dotfiles and make th
 
 **Default Target:**    
 `environment/<dotfile_name> -->  ~/<dotfile_name> `  
-- `home/.bashrc --> target: ~/.bashrc`  
-- `globals/.vimrc --> ~/.vimrc`
+- `home/.bashrc` --> default target: `~/.bashrc`  
+- `globals/.vimrc` --> default target: `~/.vimrc`
 
 ### 4. Use the `--env` or `-e` (environments) options to choose the dotfiles you want to add to the current machine. You should add the `globals + home` (for your home PC) or `global + work` (for your work PC).
 
