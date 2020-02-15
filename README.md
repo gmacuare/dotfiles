@@ -37,9 +37,25 @@ With this script, you can centralise the management of your dotfiles and make th
 ### 2. Move your dotfiles to one of the following folders (Environment Folders):
 ![Directory Tree](resources/directory_tree.png)  
    
+   **NOTE** --> All your file names should start with a **`.`** when you're copying them to one of the environments/folders.  
+
+   Example Config File: `~/.config/nvim/init.vim`
+
+   2.1 Copy your file to the globals/ folder.  
+   `cp ~/.config/nvim/init.vim globals/.init_vim`  
+  
+
+  The current environments or folders you can use are:  
  - globals/ ---> For your global dotfiles. If you want to share one dotfile between all your environments you should put it in this folder.  
  - home/ ---> For dotfiles to be maintained in your home pc.
  - work/ --> for dotfiles to be maintained in your work pc.  
+  
+
+  2.2 - Open your file and write the target in the first line of the file.  
+   ``` 
+   vim globals/.init_vim
+   # TARGET=~/.config/nvim/init.vims
+   ```
   
 ### 3. Print the list of dotfiles that the script is recognising.  
 `./dotfiles.py`
