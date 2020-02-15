@@ -134,3 +134,6 @@ export CLICOLOR=1
 
 # For Autojump to work https://github.com/wting/autojump/issues/196
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
+
+# Source custom aliases
+source $HOME/.aliases
