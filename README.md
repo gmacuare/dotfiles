@@ -41,14 +41,14 @@ With this script, you can centralise the management of your dotfiles and make th
 
    Example Config File: `~/.config/nvim/init.vim`
 
-   2.1 Copy your file to the globals/ folder.  
+   2.1 - Copy your file to the globals/ folder.  
    `cp ~/.config/nvim/init.vim globals/.init_vim`  
   
 
   The current environments or folders you can use are:  
- - globals/ ---> For your global dotfiles. If you want to share one dotfile between all your environments you should put it in this folder.  
- - home/ ---> For dotfiles to be maintained in your home pc.
- - work/ --> for dotfiles to be maintained in your work pc.  
+ - `globals/` ---> For your global dotfiles. If you want to share one dotfile between all your environments you should put it in this folder.  
+ - `home/` ---> For dotfiles to be maintained in your home pc.
+ - `work/` --> for dotfiles to be maintained in your work pc.  
   
 
   2.2 - Open your file and write the target in the first line of the file.  
