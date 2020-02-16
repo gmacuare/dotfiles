@@ -2,8 +2,7 @@
 # GIT Aliases based on ZSH https://github.com/ohmyzsh/ohmyzsh/wiki/Cheatsheet#git
 alias -g G="| grep"
 alias -g L="| less"
-
-#Work
+alias sh-colors='for i in {0..255}; do printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done'
 
 
 # Home
@@ -11,4 +10,3 @@ alias py3e="source ~/venvs/py3/bin/activate"
 alias bandwhich="sudo ~/.cargo/bin/bandwhich"
 alias clip="xclip -sel clip <"
 alias joplin=".joplin/Joplin.AppImage &"
-alias sh-colors='for i in {0..255}; do printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done'
