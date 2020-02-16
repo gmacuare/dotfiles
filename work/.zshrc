@@ -137,3 +137,7 @@ export CLICOLOR=1
 
 # Source custom aliases
 source $HOME/.aliases
+
+# Export my locale settings
+export LC_ALL=en_GB.UTF-8  
+export LANG=en_GB.UTF-8
