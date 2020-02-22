@@ -70,10 +70,7 @@ plugins=(
   terraform
 )
 
-source $ZSH/oh-my-zsh.sh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# User configuration
+# USER CONFIG
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -85,50 +82,35 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #   export EDITOR='vim'
 # else
 #   export EDITOR='mvim'
-# fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
+# CUSTOM EXPORTS
+# https://coderwall.com/p/2khjya/install-100-core-cli-utilities-with-1-command
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 
-source ~/.work_aliases
+# Export my locale settings
+export LC_ALL=en_GB.UTF-8  
+export LANG=en_GB.UTF-8
 
-# Automatic commands to be executed every time ZSH is executed
-# ssh-add ~/.ssh/netscript &>/dev/null
+# For MACs to show colored output with ls 
+export CLICOLOR=1
 
-# Custom exports
-export PATH="$HOME/anaconda3/bin:$PATH"
 
+# OTHERS
 # For colorize.https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/colorize
 ZSH_COLORIZE_STYLE="colorful"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
-# Dir colors for
-# For MACs to show colored output with ls 
-export CLICOLOR=1
-
-# SEGMENT COLORS
-
 # For Autojump to work https://github.com/wting/autojump/issues/196
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
-# Source custom aliases
-source $HOME/.aliases
 
-# Export my locale settings
-export LC_ALL=en_GB.UTF-8  
-export LANG=en_GB.UTF-8
+# SOURCING FILES
+source $HOME/.aliases
+source ~/.work_aliases
+source $ZSH/oh-my-zsh.sh
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
