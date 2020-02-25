@@ -97,6 +97,9 @@ export LANG=en_GB.UTF-8
 # For MACs to show colored output with ls 
 export CLICOLOR=1
 
+# To fix issue with zsh auto-suggestion inside Tmux
+# https://github.com/zsh-users/zsh-autosuggestions/issues/229
+export TERM=xterm-256color
 
 # OTHERS
 # For colorize.https://github.com/robbyrussell/oh-my-zsh/tree/master/plugins/colorize
