@@ -3,3 +3,4 @@
 template/
 .json
 .swp
+.iterm_conf.plist
