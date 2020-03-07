@@ -9,6 +9,14 @@ from shutil import copy
 from sys import exit
 from termcolor import colored
 from terminaltables import AsciiTable
+import logging
+
+"""
+Logging Structure
+[14/02/20]-[14:01:0555]-[root]-[__Main__]-Message 
+Define a function to setup logging to DEBUG when passed a parameter form the CLI
+"""
+
 
 
 """ Usage
@@ -23,6 +31,20 @@ ERROR_PREFIX = colored('ERROR:', 'red')
 WARNING_PREFIX = colored('WARNING:', 'cyan')
 SUCCESS_PREFIX = colored('SUCCESS:', 'green')
 
+# LOGGING
+def conf_logging(debug=False):
+    log_sev = 'WARNING'
+    if debug is True:
+        log_sev = 'DEBUG'
+    log_format = '[%(name)s]-[%(levelname)s]-%(asctime)s-%(message)s'
+    datefmt='[%d/%m/%y]-[%H:%M:%S]'
+    file='dotfiles.log'
+    
+    logging.basicConfig(format=log_format, datefmt=datefmt, level=log_sev, filename=file)
+    logger = logging.getLogger(__name__)
+    logger.debug(f'Test')
+
+
 
 def parse_arguments():
     description = "Symnlinks your system's dotfiles to your custom dotfiles"
@@ -34,6 +56,8 @@ def parse_arguments():
                         help="To print the dotfiles DB")
     parser.add_argument("--json", "-j", nargs="?", const="db.json", type=str,
                         help="The DB will be saved in <filename.json> or db.json (Default)")
+    parser.add_argument("--debug", "-d", action='store_true', default=False,
+                        help="This option enables debug mode")
     args = parser.parse_args()
     return args
 
@@ -390,6 +414,9 @@ def table_to_json_file(table_data,  environments, filename=".db.json"):
 
 def main(cli_args):
     # print(cli_args.env)
+
+    conf_logging(debug=cli_args.debug)
+
     selected_env = cli_args.env
     # print(cli_args)
     # input("Test")

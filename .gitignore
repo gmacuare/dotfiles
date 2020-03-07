@@ -1,4 +1,5 @@
 .vscode/
 *.json
 .ssh_config
-
+*.log
+__pycache__/
