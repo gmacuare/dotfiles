@@ -1,6 +1,8 @@
 .git/
 .vscode/
 template/
+__pycache__/
+resources/
 .json
 .swp
 .iterm_conf.plist
