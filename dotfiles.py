@@ -10,7 +10,7 @@ from sys import exit
 from termcolor import colored
 from terminaltables import AsciiTable
 import logging
-import sys
+
 """
 Logging Structure
 [14/02/20]-[14:01:0555]-[root]-[__Main__]-Message 
@@ -31,32 +31,13 @@ ERROR_PREFIX = colored('ERROR:', 'red')
 WARNING_PREFIX = colored('WARNING:', 'cyan')
 SUCCESS_PREFIX = colored('SUCCESS:', 'green')
 
-# LOGGING
-def conf_logging(debug):
-    """Configures the logger and expects --debug to be passed to override the default
-    warning level.
-    
-    :param debug: To define the debug level, if false (warning), if True(debug)
-    :type debug: bool
-    :return logger: The logger object
-    :rtype: logging.Logger"""
-
-    log_sev = 'WARNING'
-    if debug is True:
-        log_sev = 'DEBUG'
-    log_format = '[%(name)s]-[%(levelname)s]-%(asctime)s-[%(funcName)s]-%(message)s'
-    datefmt='[%d/%m/%y]-[%H:%M:%S]'
-    file='dotfiles.log'
-
-    # File Handler
-    logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev, 
-    filemode='w')
-    logger = logging.getLogger(__name__)
-    print(type(logger))
-    return logger
-
 
 def parse_arguments():
+    """ Parse all the arguments from the CLI.
+
+    Returns:
+        args (argsparse.Namespace): args object. To access values I.E: args.debug"""
+
     description = "Symnlinks your system's dotfiles to your custom dotfiles"
     parser = ArgumentParser(description=description)
 
@@ -72,6 +53,30 @@ def parse_arguments():
     return args
 
 
+def conf_logging(debug):
+    """Configures the logger and expects --debug to be passed to override the default
+    warning level.
+    
+    Args:
+        debug (bool): To define the debug level, if false (warning), if True(debug)
+
+    Returns:
+        logger (logging.Logger): The logger object"""
+
+    log_sev = 'WARNING'
+    if debug is True:
+        log_sev = 'DEBUG'
+    print(debug)
+    log_format = '[%(name)s]-[%(levelname)s]-%(asctime)s-[%(funcName)s]-%(message)s'
+    datefmt='[%d/%m/%y]-[%H:%M:%S]'
+    file='dotfiles.log'
+
+    # File Handler
+    logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev)
+    logger = logging.getLogger(__name__)
+    return logger
+
+
 def get_exclusions():
     "Reads .gitignore and returns a list of files/dirs to be excluded from the Database"
     dotignore = ".dotignore"
@@ -84,20 +89,28 @@ def get_exclusions():
         print(f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
         logging.exception(
             f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
-        sys.exit(1)
+        sys.sys.exit(1)
     except Exception as err:
         print(f"{ERROR_PREFIX} General exception {err}")
         logging.exception(f"{ERROR_PREFIX} {err}")
-        sys.exit(1)
+        sys.sys.exit(1)
 
 def get_envs(exclusions):
-    "Returns a list of Environments (Directories) NOT Excluded on the .dotignore file"
+    """ Creates a list of environments not excluded and return it.
+
+    Args:
+        exclusions (list): A list of exclusion defined on the .dotignore file
+
+    Returns:
+        environments (list):"""
+
     all_dirs = [x.as_posix() for x in Path(".").iterdir() if x.is_dir()]
-    # print(all_dirs)
     dirs_excluded = [dirs for dirs in exclusions if dirs.endswith("/")]
     dirs_excluded = [dir_name.strip("/") for dir_name in dirs_excluded]
+    logging.debug(f"All Dirs: {all_dirs}")
+    logging.debug(f"Excluded dirs: {dirs_excluded}")
     environments = list(set(all_dirs) - set(dirs_excluded))
-    # print(environments)
+    logging.debug(f"Environments not excluded: {environments}")
     return environments
 
 
@@ -426,10 +439,13 @@ def table_to_json_file(table_data,  environments, filename=".db.json"):
         print(f"{ERROR_PREFIX} {err}")
 
 
-def main(cli_args):
-    # print(cli_args.env)
+def main():
+
+    cli_args = parse_arguments()
 
     conf_logging(debug=cli_args.debug)
+    logging.debug(cli_args)
+    
 
     selected_env = cli_args.env
     # print(cli_args)
@@ -479,5 +495,4 @@ def main(cli_args):
 
 
 if __name__ == "__main__":
-    cli_args = parse_arguments()
-    main(cli_args)
+    main()
