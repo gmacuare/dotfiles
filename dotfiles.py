@@ -33,6 +33,14 @@ SUCCESS_PREFIX = colored('SUCCESS:', 'green')
 
 # LOGGING
 def conf_logging(debug):
+    """Configures the logger and expects --debug to be passed to override the default
+    warning level.
+    
+    :param debug: To define the debug level, if false (warning), if True(debug)
+    :type debug: bool
+    :return logger: The logger object
+    :rtype: logging.Logger"""
+
     log_sev = 'WARNING'
     if debug is True:
         log_sev = 'DEBUG'
@@ -44,6 +52,7 @@ def conf_logging(debug):
     logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev, 
     filemode='w')
     logger = logging.getLogger(__name__)
+    print(type(logger))
     return logger
 
 
