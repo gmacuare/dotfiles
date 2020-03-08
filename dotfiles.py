@@ -100,6 +100,7 @@ def get_exclusions():
         logging.exception(f"{ERROR_PREFIX} {err}")
         exit(1)
 
+
 def get_envs(exclusions):
     """ Creates a list of environments not excluded and return it.
 
