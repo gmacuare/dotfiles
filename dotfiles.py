@@ -72,28 +72,33 @@ def conf_logging(debug):
     file='dotfiles.log'
 
     # File Handler
-    logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev)
+    logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev,
+        filemode="w")
     logger = logging.getLogger(__name__)
     return logger
 
 
 def get_exclusions():
-    "Reads .gitignore and returns a list of files/dirs to be excluded from the Database"
+    """ Reads the .gitignore file and returns a list of files/dirs to be excluded
+    Returns:
+        exclusions (list): With all the file/folders to be excluded in this script
+
+    """
     dotignore = ".dotignore"
     try:
         with open(dotignore) as f:
-            exclusions = f.read().split("\n")
-            logging.info(exclusions)
+            exclusions = f.read().strip('\n').split("\n")
+            logging.debug(f"Exclusions: {exclusions}")
         return exclusions
     except FileNotFoundError as err:
         print(f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
         logging.exception(
             f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
-        sys.sys.exit(1)
+        exit(1)
     except Exception as err:
         print(f"{ERROR_PREFIX} General exception {err}")
         logging.exception(f"{ERROR_PREFIX} {err}")
-        sys.sys.exit(1)
+        exit(1)
 
 def get_envs(exclusions):
     """ Creates a list of environments not excluded and return it.
@@ -444,7 +449,7 @@ def main():
     cli_args = parse_arguments()
 
     conf_logging(debug=cli_args.debug)
-    logging.debug(cli_args)
+    logging.debug(f"CLI ARGS: {cli_args}")
     
 
     selected_env = cli_args.env
