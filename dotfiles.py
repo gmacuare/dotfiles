@@ -80,10 +80,10 @@ def conf_logging(debug):
 
 def get_exclusions():
     """ Reads the .gitignore file and returns a list of files/dirs to be excluded
+    
     Returns:
-        exclusions (list): With all the file/folders to be excluded in this script
+        exclusions (list): With all the file/folders to be excluded in this script"""
 
-    """
     dotignore = ".dotignore"
     try:
         with open(dotignore) as f:
@@ -121,14 +121,27 @@ def get_envs(exclusions):
 
 
 def get_files_locations(environment, exclusions):
-    """Gets a list of folders in the current dir(environment) and returns a str with the files inside those 
-    folders IF they are not excluded."""
+    """Parse the current files locations of each environment and file that is not
+        excluded in the .dotignore file
+
+    Args:
+        environment (list): All of the environemnts not excluded
+        exclusions (list): Files and envs to be excluded
+
+    Returns:
+        files_locations(list): Current file's location, excluding files in .dotignore"""
+
     files_locations = []
     for dirs in environment:
-        for fls in Path(dirs).rglob(".*"):
+        files_counter = 0
+        for fls in (Path(dirs).rglob(".*")):
             if fls.name not in exclusions and not fls.is_dir():
-                # print(fls.resolve().as_posix())
+                logging.debug(f"Adding to files_locations: {fls.resolve().as_posix()}")
                 files_locations.append(fls.resolve().as_posix())
+                files_counter += 1
+        logging.debug(f"{files_counter} files were added to files_locations for the"
+            f' "{dirs.upper()}/" environment')
+    logging.debug(f"Total elements of files_locations: {len(files_locations)}")
     return files_locations
 
 
