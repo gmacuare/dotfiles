@@ -10,7 +10,7 @@ from sys import exit
 from termcolor import colored
 from terminaltables import AsciiTable
 import logging
-
+import sys
 """
 Logging Structure
 [14/02/20]-[14:01:0555]-[root]-[__Main__]-Message 
@@ -32,18 +32,19 @@ WARNING_PREFIX = colored('WARNING:', 'cyan')
 SUCCESS_PREFIX = colored('SUCCESS:', 'green')
 
 # LOGGING
-def conf_logging(debug=False):
+def conf_logging(debug):
     log_sev = 'WARNING'
     if debug is True:
         log_sev = 'DEBUG'
-    log_format = '[%(name)s]-[%(levelname)s]-%(asctime)s-%(message)s'
+    log_format = '[%(name)s]-[%(levelname)s]-%(asctime)s-[%(funcName)s]-%(message)s'
     datefmt='[%d/%m/%y]-[%H:%M:%S]'
     file='dotfiles.log'
-    
-    logging.basicConfig(format=log_format, datefmt=datefmt, level=log_sev, filename=file)
-    logger = logging.getLogger(__name__)
-    logger.debug(f'Test')
 
+    # File Handler
+    logging.basicConfig(format=log_format, datefmt=datefmt, filename=file, level=log_sev, 
+    filemode='w')
+    logger = logging.getLogger(__name__)
+    return logger
 
 
 def parse_arguments():
@@ -68,13 +69,17 @@ def get_exclusions():
     try:
         with open(dotignore) as f:
             exclusions = f.read().split("\n")
-            # print(exclusions)
+            logging.info(exclusions)
         return exclusions
     except FileNotFoundError as err:
         print(f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
+        logging.exception(
+            f"{ERROR_PREFIX} The file {dotignore} cannot be found in the current dir")
+        sys.exit(1)
     except Exception as err:
-        print(f"{ERROR_PREFIX} {err}")
-
+        print(f"{ERROR_PREFIX} General exception {err}")
+        logging.exception(f"{ERROR_PREFIX} {err}")
+        sys.exit(1)
 
 def get_envs(exclusions):
     "Returns a list of Environments (Directories) NOT Excluded on the .dotignore file"
