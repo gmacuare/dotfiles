@@ -220,30 +220,54 @@ def get_nonexistent_targets(files_locations, files_targets):
         path_target = Path(target).expanduser()
         if path_target.exists():
             targets_to_add.append(False)
-            logging.debug(f'File/Syml: "{target}" will be created on create_targets()')
         else:
             targets_to_add.append(True)
+            logging.debug(f'File: "{target}" will be created on create_targets()')
     logging.debug(f"targets_to_add: {targets_to_add}")
     logging.debug(f"Total elements of targets_to_add: {len(targets_to_add)}")
     return targets_to_add
 
 
-def create_targets(targets_to_add, files_targets, selected_env, files_envs):
-    """ Check if file targets exists in the current OS and if not creates them"""
+def create_targets(targets_to_add, files_targets, selected_env, files_envs,
+    files_locations):
+    """ Creates non-existent files/symlinks only for environments selected via the CLI
+    
+    Args:
+        targets_to_add (list): Non-existent files in the current OS to be created.
+        files_targets (list): Targets where files will be symlinked to on each env
+        selected_env (list): Environments selected by the user via the CLI
+        files_envs (list): Included environments associated to each dotfile
+        files_locations(list): Current files' location, excluding files in .dotignore
+
+    Returns:
+        None"""
+
     print("\n1 - CHECKING IF TARGETS EXISTS IN THE OS")
     for index, file_to_add in enumerate(targets_to_add):
         if (file_to_add == True) and (files_envs[index] in selected_env):
             new_file = files_targets[index]
             try:
                 Path(new_file).expanduser().touch()
+                logging.debug(f"File/Symlink target has been created: {new_file}")
                 new_file = colored(new_file, "green")
                 print(f"{colored(SUCCESS_PREFIX)} File: {new_file} ---> "
                       f"has been created")
             except PermissionError:
                 error_file = colored(new_file, "red")
                 username = colored(getuser(), "red")
+                error_source = colored(files_locations[index], "red")
                 print(f'{ERROR_PREFIX} "{username}" is not allowed to create '
-                      f'"{error_file}", try chmod xxx {new_file} or change TARGET=')
+                      f'"{error_file}", try chmod xxx {new_file} or change TARGET= on '
+                      f'{error_source}')
+                logging.exception(
+                    f'{ERROR_PREFIX} "{username}" is not allowed to create '
+                    f'"{error_file}", try chmod xxx {new_file} or change TARGET= on '
+                    f'{error_source}')   
+                exit(1)
+            except Exception as err:
+                print(f"{ERROR_PREFIX} General exception {err}")
+                logging.exception(f"{ERROR_PREFIX} {err}")
+                exit(1)
 
     print(f'{SUCCESS_PREFIX} All targets exist in the OS.')
 
@@ -499,25 +523,17 @@ def main():
     conf_logging(debug=cli_args.debug)
     logging.debug(f"CLI ARGS: {cli_args}")
     
-
     selected_env = cli_args.env
-    # print(cli_args)
-    # input("Test")
 
     exclusions = get_exclusions()
-    # print(f"EXCLUSIONS:\n {exclusions}\n")
 
     environments = get_envs(exclusions)
-    # print(f"ENVS:\n {environments}\n")
 
     files_envs = get_files_envs(environments, exclusions)
-    # print(f"FILE-ENVS:\n {files_envs}\n")
 
     files_locations = get_files_locations(environments, exclusions)
-    # pprint(f"FILE-LOCATIONS:\n {files_locations}\n")
 
     files_targets = get_files_targets(files_locations)
-    # print(f"FILE-TARGETS:\n {files_targets}\n")
 
     if not selected_env:
         table_data = create_row_tables(
@@ -530,14 +546,14 @@ def main():
             files_locations, files_targets)
 
         if True in targets_to_add:
-            create_targets(targets_to_add, files_targets,
-                           selected_env, files_envs)
+            create_targets(
+                targets_to_add, files_targets, selected_env, files_envs, files_locations)
         else:
             print(f'\n1 - CHECKING IF TARGETS EXISTS IN THE OS\n'
                   f'{SUCCESS_PREFIX} All targets exist in the OS.')
 
-        targets_to_source = process_symlinks(files_locations, files_targets,
-                                             files_envs, selected_env)
+        targets_to_source = process_symlinks(
+            files_locations, files_targets,files_envs, selected_env)
 
         if targets_to_source:
             print_source_message(targets_to_source)
