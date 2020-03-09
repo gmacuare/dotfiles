@@ -129,7 +129,7 @@ def get_files_locations(environment, exclusions):
         exclusions (list): Files and envs to be excluded
 
     Returns:
-        files_locations(list): Current file's location, excluding files in .dotignore"""
+        files_locations(list): Current files' location, excluding files in .dotignore"""
 
     files_locations = []
     for dirs in environment:
@@ -146,10 +146,18 @@ def get_files_locations(environment, exclusions):
 
 
 def get_files_targets(files_locations):
-    """Gets a lists of files location. Search the first line on each file for a string
-    containing TARGET=<path> I.E TARGET=~/.vimrc. If no TARGET= is present, by default 
-    the target will be ~/.<dotfile_name>
-    Returns a list with the targets defined for each file. """
+    """Gets a lists of files targets. 
+    
+    Search the first line on each file for a string containing TARGET=<path> I.E 
+    TARGET=~/.vimrc. If no TARGET= is present, by default the target will be 
+    ~/.<dotfile_name>
+    
+    Args:
+        files_locations(list): Current files' location, excluding files in .dotignore 
+        
+    Return:
+        files_targets (list): Targets where files will be symlinked to on each env"""
+    
     files_targets = []
     TARGET_ID = "TARGET="
     for files in files_locations:
@@ -160,11 +168,16 @@ def get_files_targets(files_locations):
             target_path = [path for path in target_path if TARGET_ID in path]
             target_path = target_path[0].replace(TARGET_ID, "")
             files_targets.append(target_path)
+            logging.debug(
+                f"File: {files} Custom Target: {target_path} added to files_targets")
         else:
             file_name = Path(files)
             file_name = file_name.name
             file_path = "~/" + file_name
             files_targets.append(file_path)
+            logging.debug(
+                f"File: {files} Default Target: {file_path} added to files_targets")
+    logging.debug(f"files_targets: {files_targets}")
     return files_targets
 
 
