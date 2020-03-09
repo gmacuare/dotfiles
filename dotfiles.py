@@ -182,14 +182,14 @@ def get_files_targets(files_locations):
 
 
 def get_files_envs(environment, exclusions):
-    """Gets a list of folders in the current dir(environment) and returns a str with the files inside those 
-    folders IF they are not excluded."""
+    """Gets a list of folders in the current dir(environment) if they are not excluded."""
     files_envs = []
     for dirs in environment:
+        logging.debug(f"Directory: {dirs} Environment: {environment}")
         for fls in Path(dirs).rglob(".*"):
             if fls.name not in exclusions and not fls.is_dir():
                 files_envs.append(dirs)
-    # print(files_envs)
+    logging.debug(f"files_envs: {get_files_envs})
     return files_envs
 
 
