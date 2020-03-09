@@ -105,10 +105,10 @@ def get_envs(exclusions):
     """ Creates a list of environments not excluded and return it.
 
     Args:
-        exclusions (list): A list of exclusion defined on the .dotignore file
+        exclusions (list): A list of exclusions defined on the .dotignore file
 
     Returns:
-        environments (list):"""
+        environments (list): Environments(dirs not excluded)"""
 
     all_dirs = [x.as_posix() for x in Path(".").iterdir() if x.is_dir()]
     dirs_excluded = [dirs for dirs in exclusions if dirs.endswith("/")]
@@ -118,6 +118,27 @@ def get_envs(exclusions):
     environments = list(set(all_dirs) - set(dirs_excluded))
     logging.debug(f"Environments not excluded: {environments}")
     return environments
+
+
+def get_files_envs(environment, exclusions):
+    """Creates a list of environments associated to each dotfile if the env is not 
+    excluded
+    
+    Args:
+        environments (list): Environments(dirs not excluded)
+        exclusions (list): A list of exclusions defined on the .dotignore file
+
+    Returns:
+        files_envs (list): Included environments associated to each dotfile
+    """
+    files_envs = []
+    for dirs in environment:
+        for fls in Path(dirs).rglob(".*"):
+            if fls.name not in exclusions and not fls.is_dir():
+                files_envs.append(dirs)
+    logging.debug(f"files_envs: {files_envs}")
+    logging.debug(f"Total elements of files_envs: {len(files_envs)}")
+    return files_envs
 
 
 def get_files_locations(environment, exclusions):
@@ -181,29 +202,29 @@ def get_files_targets(files_locations):
     return files_targets
 
 
-def get_files_envs(environment, exclusions):
-    """Gets a list of folders in the current dir(environment) if they are not excluded."""
-    files_envs = []
-    for dirs in environment:
-        logging.debug(f"Directory: {dirs} Environment: {environment}")
-        for fls in Path(dirs).rglob(".*"):
-            if fls.name not in exclusions and not fls.is_dir():
-                files_envs.append(dirs)
-    logging.debug(f"files_envs: {get_files_envs})
-    return files_envs
-
-
 def get_nonexistent_targets(files_locations, files_targets):
-    """Check if the file targets exist and return a list with True 
-    if target DOES NOT exists or False if the target exists"""
+    """Check if the file's target exist and return a list with True if target DOES NOT
+    exists or False if the target exists
+    
+    Args:
+        files_locations(list): Current files' location, excluding files in .dotignore 
+        files_targets (list): Targets where files will be symlinked to on each env
+
+    Returns:
+        targets_to_add (list): Non-existent files in the current OS to be created."""
+
     targets_to_add = []
     dotfiles = (dict(zip(files_locations, files_targets)))
+    logging.debug(f"File Location: Target {dotfiles}")
     for target in dotfiles.values():
         path_target = Path(target).expanduser()
         if path_target.exists():
             targets_to_add.append(False)
+            logging.debug(f'File/Syml: "{target}" will be created on create_targets()')
         else:
             targets_to_add.append(True)
+    logging.debug(f"targets_to_add: {targets_to_add}")
+    logging.debug(f"Total elements of targets_to_add: {len(targets_to_add)}")
     return targets_to_add
 
 
