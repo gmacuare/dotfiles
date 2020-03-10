@@ -244,7 +244,7 @@ def create_targets(targets_to_add, files_targets, selected_env, files_envs,
 
     print("\n1 - CHECKING IF TARGETS EXISTS IN THE OS")
     for index, file_to_add in enumerate(targets_to_add):
-        if (file_to_add == True) and (files_envs[index] in selected_env):
+        if (file_to_add is True) and (files_envs[index] in selected_env):
             new_file = files_targets[index]
             try:
                 Path(new_file).expanduser().touch()
@@ -333,14 +333,22 @@ def check_symlinks(filtered_dotfiles):
         else:
             print(f"{WARNING_PREFIX} {target} has NOT got a symlink.")
             erroneous_symlinks.append([target, location, None])
+    
+    logging.debug(f"erroneous_symlinks: {erroneous_symlinks}")
+    logging.debug(f"Total elements of erroneous_symlinks: {len(erroneous_symlinks)}")
     return erroneous_symlinks
 
 
-def fix_symlinks(erroneous_symlinks):
-    """ Receives a list with erroneus symlinks [] and ask the use if he/she wants to
-    modify the symlink. If any symlink is modified the original file is first backed up.
-    Returns targets_to_source[]
-    """
+def print_syml_changes(erroneous_symlinks):
+    """ Prints the changes that will be performed (Creating or modifying a symlink)
+
+    Args:
+        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        [[target, location, None], [target, location, path_target_str]
+   
+    Returns:
+        None"""
+    
     print(f"\n\t2.1 - FIXING SYMLINKS: The following symlinks will be changed on the env")
     for entries in erroneous_symlinks:
         target = entries[0]
@@ -349,6 +357,21 @@ def fix_symlinks(erroneous_symlinks):
         print(f"\tFile: {target}\n"
               f"\tFrom --> {colored(current_sym, 'red')}\n"
               f"\tTo   --> {colored(expected_sym, 'green')}\n")
+    return None
+
+
+def fix_symlinks(erroneous_symlinks):
+    """ Receives a list with erroneus symlinks [] and ask the use if he/she wants to
+    modify the symlink. If any symlink is modified, the original file is first backed up.
+
+    Args:
+        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        [[target, location, None], [target, location, path_target_str]
+   
+    Returns:
+        targets_to_source (list): A list of symlinks targets to be changed. If there are 
+        no changes, this function will return None."""
+
     while True:
         proceed = input(
             "\tWould you like to proceed with these changes(y/n)? ").lower()
@@ -358,23 +381,27 @@ def fix_symlinks(erroneous_symlinks):
             for entries in erroneous_symlinks:
                 target = entries[0]
                 expected_sym = entries[1]
-                current_sym = entries[2]
+                path_target_str = entries[2]
+                symlink_exists =  False if path_target_str is None else True
+
                 try:
                     original_file = Path(target).expanduser()
-                    wrong_symlink = original_file.is_symlink()
-                    if wrong_symlink:
-                        # Candidate for a function backup_file()
+                    if symlink_exists:
                         backup_file(src=target)
-                        update_symlink(dotfile=original_file,
-                                       target=expected_sym)
-                        targets_to_source.append(original_file)
+                        update_symlink(dotfile=original_file, target=expected_sym)
+                        targets_to_source.append(str(original_file))
+                        logging.debug(f"File: {original_file} added to targets_to_source"
+                        )
                     else:
-                        update_symlink(dotfile=original_file,
-                                       target=expected_sym)
-                        targets_to_source.append(original_file)
+                        update_symlink(dotfile=original_file, target=expected_sym)
+                        targets_to_source.append(str(original_file))
+                        logging.debug(f"File: {original_file} added to targets_to_source"
+                        )
                     continue
                 except Exception as err:
                     print(err)
+                    logging.exception(f"{ERROR_PREFIX} When creating symlink {err}")
+                    exit(1)
             break
         elif proceed == "n" or proceed == "no":
             print(f"\t{colored(ERROR_PREFIX)} EXITING - The symlinks need to be fixed "
@@ -384,37 +411,55 @@ def fix_symlinks(erroneous_symlinks):
             print('\tInvalid answer - press "y" or "n"\n')
 
     print(f"\t{colored(SUCCESS_PREFIX)} All files have been correctly symlink.")
+    logging.debug(f"targets_to_source: {targets_to_source}")
     return targets_to_source
 
 
 def backup_file(src):
-    """Receives a string with the source such as ~/.vimrc and it creates a backup file like
-    ~/.vimrc-10-10-2020."""
+    """Receives a string like ~/.vimrc and creates a backup file like ~/.vimrc-10-10-2020
+
+    Args:
+        src (str): I.E ~/.vimrc
+
+    Returns:
+        None"""
+
     src = Path(src).expanduser()
     today = date.today().strftime("%d-%m-%Y")
     today_suffix = f"-backup-{today}"
     backup_file = src.as_posix() + today_suffix
     try:
         copy(str(src), backup_file)
-
         print(
-            f'\tThe file: "{src}" has been backed up at --> "{colored(backup_file, "cyan")}"')
+            f'\tThe file: "{src}" has been backed up at --> "'
+            f'{colored(backup_file, "cyan")}"')
+        logging.debug(f"File: {src} has been backed up at {backup_file}")
     except Exception as err:
         print(err)
+        logging.exception(f"{ERROR_PREFIX} When creating symlink {err}")
+        exit(1)
 
 
 def update_symlink(dotfile, target):
-    """Receives a dotfile[] and the target[] to symlink to. Returns None"""
+    """ Updates the current symlink to the correct target.
+    Args:
+        dotfile (str): This is the original file to be updated
+        target (str): This is the target to which the dotfile will be symlinnked to
+
+    Returns:
+        None"""
+
     target = Path(target).expanduser()
     if target:
         dotfile.expanduser().unlink()
         dotfile.expanduser().symlink_to(target)
-        # print(target)
+
     else:
         dotfile = dotfile.symlink_to(target)
-    # dotfile = dotfile.expanduser().as_posix()
+
     print(f'\t{colored(SUCCESS_PREFIX)} The file: "{dotfile}" has been symlink --> "'
           f'{colored(target, "green")}"')
+    logging.debug(f"File: {dotfile} has been symlinked to: {target}")
 
 
 def print_source_message(targets_to_source):
@@ -578,10 +623,9 @@ def main():
         erroneous_symlinks = check_symlinks(filtered_dotfiles)
 
         if erroneous_symlinks:
+            print_syml_changes(erroneous_symlinks)
             targets_to_source = fix_symlinks(erroneous_symlinks)
-            return targets_to_source
-        else:
-            return None
+
 
         if targets_to_source:
             print_source_message(targets_to_source)
