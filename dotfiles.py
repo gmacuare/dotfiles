@@ -272,28 +272,55 @@ def create_targets(targets_to_add, files_targets, selected_env, files_envs,
     print(f'{SUCCESS_PREFIX} All targets exist in the OS.')
 
 
-def process_symlinks(files_locations, files_targets, files_envs, selected_env):
-    """ Receives lists with locations, targets, available envs and a string which selects 
-    the environment to filter the environments to be used.
-    Creates -> erroneous_symlinks[] if any symlink needs to be created changed
-    and calls fix_symlinks(erroneous_symlinks)
-    Returns targets_to_source if any symlink is modified, if not, returns None.
-    """
-    # Prints the changes that need to be carried out to inform the user
+def filter_dotfiles(files_locations, files_targets, files_envs, selected_env):
+    """ 
+    Filters all the files depending on the selected env I.E: --env home
+
+    Args:
+        files_locations(list): Current files' location, excluding files in .dotignore
+        files_targets (list): Targets where files will be symlinked to on each env
+        files_envs (list): Included environments associated to each dotfile
+        selected_env (list): Environments selected by the user via the CLI
+
+    Returns:
+        filtered_dotfiles (dict): {filtered_locations: filtered targets}"""
+
     selected_env_str = " - ".join(selected_env).upper()
     print(f'\n2 - CHECKING ALL SYMLINKS ON THE ENVS: "{selected_env_str}"')
     env_indexes = []
-    erroneous_symlinks = []
+    
     for index, env in enumerate(files_envs):
         if env in selected_env:
             env_indexes.append(index)
 
     filtered_locations = [files_locations[index] for index in env_indexes]
-    filtered_targets = [files_targets[index] for index in env_indexes]
-    dotfiles = (dict(zip(filtered_locations, filtered_targets)))
+    logging.debug(f"filtered_locations: {filtered_locations}")
+    logging.debug(f"Total elements of filtered_locations: {len(filtered_locations)}")
 
+    filtered_targets = [files_targets[index] for index in env_indexes]
+    logging.debug(f"filtered_targets: {filtered_targets}")
+    logging.debug(f"Total elements of filtered_targets: {len(filtered_targets)}")
+
+    filtered_dotfiles = (dict(zip(filtered_locations, filtered_targets)))
+    logging.debug(f"filtered_dotfiles: {filtered_dotfiles}")
+    logging.debug(f"Total elements of filtered_dotfiles: {len(filtered_dotfiles)}")
+    
+    return filtered_dotfiles
+
+
+def check_symlinks(filtered_dotfiles):
+    """ Checks if the filtered_targets are correctly symlinked to the filtered_locations
+
+    Args:
+        filtered_dotfiles (dict)
+
+    Returns:
+        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        [[target, location, None], [target, location, path_target_str]
+"""
+    erroneous_symlinks = []
     # Checking if symlinks are correctly linked, if not add them to erroneous_symlinks[]
-    for location, target in dotfiles.items():
+    for location, target in filtered_dotfiles.items():
         path_target = Path(target).expanduser()
         path_target_str = path_target.resolve().as_posix()
         if path_target.is_symlink():
@@ -302,18 +329,11 @@ def process_symlinks(files_locations, files_targets, files_envs, selected_env):
                     f"{SUCCESS_PREFIX} {target} is linked to the correct location.")
             else:
                 print(f"{WARNING_PREFIX} {target} is linked to the wrong location.")
-                # f"\tSymlink points to --> {colored(path_target.resolve(), 'red')}\n"
-                # f"\tExpected pointer  --> {colored(location, 'green')}\n")
                 erroneous_symlinks.append([target, location, path_target_str])
         else:
             print(f"{WARNING_PREFIX} {target} has NOT got a symlink.")
             erroneous_symlinks.append([target, location, None])
-
-    if erroneous_symlinks:
-        targets_to_source = fix_symlinks(erroneous_symlinks)
-        return targets_to_source
-    else:
-        return None
+    return erroneous_symlinks
 
 
 def fix_symlinks(erroneous_symlinks):
@@ -540,7 +560,7 @@ def main():
             files_locations, files_targets, files_envs)
         print_table(table_data)
 
-    # selected_env=["globals", "home"]
+    selected_env=["globals", "home"]
     if selected_env:
         targets_to_add = get_nonexistent_targets(
             files_locations, files_targets)
@@ -552,8 +572,16 @@ def main():
             print(f'\n1 - CHECKING IF TARGETS EXISTS IN THE OS\n'
                   f'{SUCCESS_PREFIX} All targets exist in the OS.')
 
-        targets_to_source = process_symlinks(
+        filtered_dotfiles = filter_dotfiles(
             files_locations, files_targets,files_envs, selected_env)
+
+        erroneous_symlinks = check_symlinks(filtered_dotfiles)
+
+        if erroneous_symlinks:
+            targets_to_source = fix_symlinks(erroneous_symlinks)
+            return targets_to_source
+        else:
+            return None
 
         if targets_to_source:
             print_source_message(targets_to_source)
