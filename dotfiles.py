@@ -5,6 +5,7 @@ from getpass import getuser
 from json import dumps
 from pathlib import Path
 from pprint import pprint
+from random import choice
 from shutil import copy
 from sys import exit
 from termcolor import colored
@@ -463,7 +464,15 @@ def update_symlink(dotfile, target):
 
 
 def print_source_message(targets_to_source):
-    """Receives targets_to_source and instructions for the user to source them """
+    """Prints message advising the user to source the files that have been changed.
+    
+    Args:
+        targets_to_source (list): A list of symlinks targets to be sourced. 
+
+    Returns:
+        None
+
+    """
     print(f'\n3 - OPEN A NEW WINDOW FOR CHANGES TO TAKE EFFECT OR ISSUE THE FOLLOWING '
           f'COMMANDS:')
     for target in targets_to_source:
@@ -472,56 +481,68 @@ def print_source_message(targets_to_source):
 
 
 def create_row_tables(files_locations, files_targets, files_envs):
-    """ Receives files_locations[], files_targets[] and files_envs
-    This return a list with all the rows (1 dictionary per row)
-    I.E {"ID":1, "Environment": "home", "Location":"", "Target":""}
-    Gets encasuplated in:
-    table_data[["id", "name", "location", "target", "env"],
-               ['row1 column1', 'row1 column2'] ]"""
-    HEADERS = ["id", "name", "location", "target", "env"]
+    """Formats the table rows to be the printed by print_table() 
+    
+    Args:
+        files_locations(list): Current files' location, excluding files in .dotignore
+        files_targets (list): Targets where files will be symlinked to on each env
+        files_envs (list): Included environments associated to each dotfile
+
+    Returns:
+        table_data (List of dicts): Returns a list of dictionaries. Each dict is a row"""
+
+    # HEADERS = ["id", "name", "location", "target", "env"]
     table_data = []
-    table_data.append(HEADERS)
+    # table_data.append(HEADERS)
     for id, location in enumerate(files_locations):
         name = files_targets[id].strip("~/")
         target = files_targets[id]
         env = files_envs[id]
         rows = [id, name, location, target, env]
         table_data.append(rows)
+    logging.debug(f"table_data: {table_data}")
     return table_data
 
 
 def print_table(table_data):
-    """Gets a list with the following format
-table_data = [
-    ['Heading1', 'Heading2'],
-    ['row1 column1', 'row1 column2'],
-    ['row2 column1', 'row2 column2'],
-    ['row3 column1', 'row3 column2']
-]
+    """Prints the dotfiles table
 
-+--------------+--------------+
-| Heading1     | Heading2     |
-+--------------+--------------+
-| row1 column1 | row1 column2 |
-| row2 column1 | row2 column2 |
-| row3 column1 | row3 column2 |
-+--------------+--------------+
-    """
+    Args:
+        table_data (List of dicts): Returns a list of dictionaries. Each dict is a row
+    
+    Returns:
+        None"""
+
+# THIS NEEDS TO BE DYNAMIC
     HEADERS_C = None
     GLOBAL_C = "yellow"
     HOME_C = "green"
     WORK_C = "cyan"
 
-    id = colored("ID", HEADERS_C, attrs=["bold", "underline"])
-    name = colored("NAME", HEADERS_C, attrs=["bold", "underline"])
-    location = colored("LOCATION", HEADERS_C, attrs=["bold", "underline"])
-    target = colored("TARGET", HEADERS_C, attrs=["bold", "underline"])
-    env = colored("ENV", HEADERS_C, attrs=["bold", "underline"])
+    # colors = ["yellow", "red", "green", "cyan", "blue", "magenta", "white"]
+    # GLOBAL_C = choice(colors)
+    # HOME_C = choice(colors)
+    # WORK_C = choice(colors)
 
+    # id = colored("ID", HEADERS_C, attrs=["bold", "underline"])
+    # name = colored("NAME", HEADERS_C, attrs=["bold", "underline"])
+    # location = colored("LOCATION", HEADERS_C, attrs=["bold", "underline"])
+    # target = colored("TARGET", HEADERS_C, attrs=["bold", "underline"])
+    # env = colored("ENV", HEADERS_C, attrs=["bold", "underline"])
+
+    HEADERS = ["ID", "NAME", "LOCATION", "TARGET", "ENV"]
+
+    id = colored(HEADERS[0], HEADERS_C, attrs=["bold", "underline"])
+    name = colored(HEADERS[1], HEADERS_C, attrs=["bold", "underline"])
+    location = colored(HEADERS[2], HEADERS_C, attrs=["bold", "underline"])
+    target = colored(HEADERS[3], HEADERS_C, attrs=["bold", "underline"])
+    env = colored(HEADERS[4], HEADERS_C, attrs=["bold", "underline"])
     colored_headers = [id, name, location, target, env]
-    colored_table_data = table_data.copy()
-    colored_table_data[0] = colored_headers
 
+    colored_table_data = table_data.copy()
+    colored_table_data.insert(0, colored_headers)
+
+# THIS NEEDS TO BE DYNAMIC
     for index, row in enumerate(colored_table_data[1:], start=1):
         env = row[4]
         if env == "globals":
@@ -605,7 +626,7 @@ def main():
             files_locations, files_targets, files_envs)
         print_table(table_data)
 
-    selected_env=["globals", "home"]
+    # selected_env=["globals", "home"]
     if selected_env:
         targets_to_add = get_nonexistent_targets(
             files_locations, files_targets)
@@ -625,9 +646,6 @@ def main():
         if erroneous_symlinks:
             print_syml_changes(erroneous_symlinks)
             targets_to_source = fix_symlinks(erroneous_symlinks)
-
-
-        if targets_to_source:
             print_source_message(targets_to_source)
 
     # cli_args.json = "db.json"
