@@ -314,10 +314,10 @@ def check_symlinks(filtered_dotfiles):
     """ Checks if the filtered_targets are correctly symlinked to the filtered_locations
 
     Args:
-        filtered_dotfiles (dict)
+        filtered_dotfiles: (dict)
 
     Returns:
-        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        erroneous_symlinks (list): dotfiles with no symlinks or with erroneous symlinks
         [[target, location, None], [target, location, path_target_str]
 """
     erroneous_symlinks = []
@@ -345,7 +345,7 @@ def print_syml_changes(erroneous_symlinks):
     """ Prints the changes that will be performed (Creating or modifying a symlink)
 
     Args:
-        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        erroneous_symlinks (list): dotfiles with no symlinks or with erroneous symlinks
         [[target, location, None], [target, location, path_target_str]
    
     Returns:
@@ -367,7 +367,7 @@ def fix_symlinks(erroneous_symlinks):
     modify the symlink. If any symlink is modified, the original file is first backed up.
 
     Args:
-        erroneous_symlinks (list) = dotfiles with no symlinks or with erroneous symlinks
+        erroneous_symlinks (list): dotfiles with no symlinks or with erroneous symlinks
         [[target, location, None], [target, location, path_target_str]
    
     Returns:
@@ -471,9 +471,8 @@ def print_source_message(targets_to_source):
         targets_to_source (list): A list of symlinks targets to be sourced. 
 
     Returns:
-        None
+        None"""
 
-    """
     print(f'\n3 - OPEN A NEW WINDOW FOR CHANGES TO TAKE EFFECT OR ISSUE THE FOLLOWING '
           f'COMMANDS:')
     for target in targets_to_source:
@@ -492,9 +491,7 @@ def create_row_tables(files_locations, files_targets, files_envs):
     Returns:
         table_data (List of dicts): Returns a list of dictionaries. Each dict is a row"""
 
-    # HEADERS = ["id", "name", "location", "target", "env"]
     table_data = []
-    # table_data.append(HEADERS)
     for id, location in enumerate(files_locations):
         name = files_targets[id].strip("~/")
         target = files_targets[id]
@@ -509,7 +506,7 @@ def print_table(table_data):
     """Prints the dotfiles table
 
     Args:
-        table_data (List of dicts): Returns a list of dictionaries. Each dict is a row
+        table_data (list of dicts): Returns a list of dictionaries. Each dict is a row
     
     Returns:
         None"""
@@ -576,8 +573,6 @@ def table_to_json_file(table_data,  environments, filename=".db.json"):
     Returns:
         None"""
 
-
-    # headers = table_data[0]
     rows = table_data[1:]
     logging.debug(f"Table Headers: {HEADERS}")
     logging.debug(f"Table rows: {rows}")
