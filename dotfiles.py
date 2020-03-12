@@ -31,6 +31,7 @@ Define a function to setup logging to DEBUG when passed a parameter form the CLI
 ERROR_PREFIX = colored('ERROR:', 'red')
 WARNING_PREFIX = colored('WARNING:', 'cyan')
 SUCCESS_PREFIX = colored('SUCCESS:', 'green')
+HEADERS = ["ID", "NAME", "LOCATION", "TARGET", "ENV"]
 
 
 def parse_arguments():
@@ -530,8 +531,6 @@ def print_table(table_data):
     # target = colored("TARGET", HEADERS_C, attrs=["bold", "underline"])
     # env = colored("ENV", HEADERS_C, attrs=["bold", "underline"])
 
-    HEADERS = ["ID", "NAME", "LOCATION", "TARGET", "ENV"]
-
     id = colored(HEADERS[0], HEADERS_C, attrs=["bold", "underline"])
     name = colored(HEADERS[1], HEADERS_C, attrs=["bold", "underline"])
     location = colored(HEADERS[2], HEADERS_C, attrs=["bold", "underline"])
@@ -567,28 +566,40 @@ def print_table(table_data):
 
 def table_to_json_file(table_data,  environments, filename=".db.json"):
     """ This function turns the table_data[headers,row1,row2,...] into JSON and copies it
-    to the file defined by filename which is passed by the user via CLI. """
-    # headers = ["id", "name","location", "target", "env"]
-    # table_data[0] = headers
-    headers = table_data[0]
+    to the file defined by filename which is passed by the user via CLI. 
+    
+    Args:
+        table_data (List of dicts): Returns a list of dictionaries. Each dict is a row
+        environments (list): Environments(dirs not excluded)
+        filename (str): The filename to write the table to (JSON serialised).
+
+    Returns:
+        None"""
+
+
+    # headers = table_data[0]
     rows = table_data[1:]
-    # table_data[0].append(1) # To test the error next
-    if len(headers) != len(rows[0]):
+    logging.debug(f"Table Headers: {HEADERS}")
+    logging.debug(f"Table rows: {rows}")
+
+    if len(HEADERS) != len(rows[0]):
         print(f"{ERROR_PREFIX} headers and rows' lengths are different.")
+        logging.exception(f"{ERROR_PREFIX} headers and rows' lengths are different")
         exit(1)
-    # print(rows)
+    
+    header_lowcase = [header.lower() for header in HEADERS]
     db_dict = {"version": 1, "envs": {}}
     for row in rows:
-        row_dict = dict(zip(headers, row))
+        row_dict = dict(zip(header_lowcase, row))
         env_name = row_dict["env"]
         if env_name in environments:
             row_dict.pop('env')
             if env_name in db_dict["envs"].keys():
                 db_dict['envs'][env_name].append(row_dict)
-                # print(db_dict)
+                logging.debug(f"Adding: {row_dict} to db_dict")
             else:
                 db_dict['envs'].update({env_name: [row_dict]})
-                # print(db_dict)
+                logging.debug(f'Updating Env: "{env_name.upper()}" on db_dict')
     pprint(db_dict)
     db_json = dumps(db_dict, indent=4, sort_keys=True)
 
@@ -597,9 +608,11 @@ def table_to_json_file(table_data,  environments, filename=".db.json"):
             f.write(db_json)
         # return db_json
         db_file = Path(filename).absolute()
-        print(f'\n{SUCCESS_PREFIX} The json field has been written to "{db_file}"')
+        print(f'\n{SUCCESS_PREFIX} The json file has been written to "{db_file}"')
+        logging.debug(f'The json file has been written to "{db_file}"')
     except Exception as err:
         print(f"{ERROR_PREFIX} {err}")
+        logging.exception(f"{ERROR_PREFIX} {err}")
 
 
 def main():
