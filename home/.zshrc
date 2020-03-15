@@ -39,6 +39,10 @@ export TERM=xterm-256color
 # To source virtualenv
 export PATH=~/.local/bin:$PATH
 
+# For TLDR
+export PATH=$PATH:~/bin
+
+
 # OTHERS
 # Dracula theme specific config.
 DRACULA_DISPLAY_CONTEXT=1
