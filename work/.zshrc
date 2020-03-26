@@ -117,3 +117,8 @@ source $HOME/.aliases
 source ~/.work_aliases
 source $ZSH/oh-my-zsh.sh
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/venvs/py3/bin/activate
+
+# FUNCTIONS
+# This is to send the output of ssh to chromaterm
+ssh() { /usr/bin/ssh "$@" | ct; }

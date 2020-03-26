@@ -5,10 +5,10 @@ rules:
       color: f#ff0000 bold
 
     - description: Will color (username)@(devicename)>
-      regex: (^\w*)@([a-zA-Z0-9\,\-]*)> 
+      regex: (^\w*)@([a-zA-Z0-9\,\-]*>) 
       color: 
-          1: f#0038DB
-          2: f#D4DB00 bold
+          1: f#00DF3A
+          2: f#00D1DB bold
 
     - description: Ipv4s 
       regex: \b(?<!\.)((25[0-5]|(2[0-4]|[0-1]?\d)?\d)\.){3}(25[0-5]|(2[0-4]|[0-1]?\d)?\d)(/\d+)?(?!\.)\b 
@@ -20,13 +20,12 @@ rules:
       regex: "(set security policies) (from-zone [a-zA-Z0-9_-]+ )(to-zone [a-zA-Z0-9_-]+ )(policy [a-zA-Z0-9_-]+ )"
       color: 
           1: f#FFFFFF
-          2: f#C24B16 bold
-          3: f#00F969 bold
-          3: f#03DAC6 bold
+          2: f#00F969 bold
+          3: f#FF0049 bold
           4: f#6CFF00 bold
 
     - description: Security Policies - Description 
-      regex: (description \"[\/a-zA-Z0-9\.\s_\*()-]+\") 
+      regex: (description ["\/a-zA-Z0-9\.\s_\*(),-]+)$ #"
       color: f#00D1DB bold
 
     - description: Security Policies - Match|Then
@@ -35,11 +34,11 @@ rules:
 
     - description: Security Policies - Source-Adress
       regex: (source-address [\/a-zA-Z0-9\._-]+)?
-      color: f#FF0049 bold
+      color: f#00F969 bold
 
     - description: Security Policies - Destination-Adress
       regex: (destination-address [\/a-zA-Z0-9\._-]+)?
-      color: f#00F969 bold
+      color: f#FF0049 bold
 
     - description: Security Policies - Application
       regex: (application [\/a-zA-Z0-9\._-]+)?
@@ -50,7 +49,34 @@ rules:
       color: f#FF0000 bold
 
     - description: Security Policies - log
-      regex: (log [/a-zA-Z0-9\._-]+)?
+      regex: (log [/a-zA-Z0-9\._-]+)?$
       color: f#FF0000 bold
 
 # BGP
+
+# Show interface
+    - description: Interface - Physical Interface 
+      regex: "^Physical interface: [a-zA-Z0-9\/-]+"
+      color: f#6CFF00
+
+    - description: Interface - Physical Link Status (Up|Down)
+      regex: Physical link is ((Up)|Down)
+      color: 
+          1: f#FF0000 bold
+          2: f#6CFF00
+
+    - description: Interface - Description 
+      regex: Description:\s[a-zA-Z0-9_"-]+$ 
+      color: f#6CFF00
+
+    - description: Interface - Last Flapped 
+      regex: Last flapped\s+:\s.*$ 
+      color: f#00D1DB bold
+
+    - description: Interface - Input rate (green)
+      regex: Input rate\s*:\s[0-9]+ bps \([0-9]+ pps\) 
+      color: f#00F969 bold
+
+    - description: Interface - Output rate (red)
+      regex: Output rate\s*:\s[0-9]+ bps \([0-9]+ pps\) 
+      color: f#FF0049 bold
