@@ -66,7 +66,7 @@ rules:
           2: f#6CFF00
 
     - description: Interface - Description 
-      regex: Description:\s[a-zA-Z0-9_"-]+$ 
+      regex: Description:\s[a-zA-Z0-9\s_\/"-]+$ 
       color: f#6CFF00
 
     - description: Interface - Last Flapped 
@@ -80,3 +80,26 @@ rules:
     - description: Interface - Output rate (red)
       regex: Output rate\s*:\s[0-9]+ bps \([0-9]+ pps\) 
       color: f#FF0049 bold
+
+## ARISTA
+# General
+    - description: Cisco MAC Address Notation 
+      regex: ([0-9a-f]{4}\.[0-9a-f]{4}\.[0-9a-f]{4}).*
+      color: f#FF0049 
+
+
+# Interfaces
+    - description: Interface - Physical status
+      regex: ((^Ethernet[0-9]+ is up)|^Ethernet[0-9]+ is down)
+      color:
+          1: f#ff0000 bold
+          2: f#6CFF00
+
+
+    - description: Interface - Line Protocol 
+      regex: ((line protocol is down.*$)|(line protocol is lowerlayerdown.*$)|line protocol is up.*$)
+      color:
+          1: f#6CFF00
+          2: f#ff0000 bold
+          3: f#ff0000 bold
+
