@@ -48,11 +48,9 @@ export PATH=$PATH:~/bin
 DRACULA_DISPLAY_CONTEXT=1
 DRACULA_DISPLAY_TIME=1
 
-
 # To avoid ssh-add "Could not open a connection to your authentication agent"
 # https://coderwall.com/p/rdi_wq/fix-could-not-open-a-connection-to-your-authentication-agent-when-using-ssh-add
 eval $(ssh-agent)
-
 
 
 
@@ -67,3 +65,9 @@ source $ZSH/oh-my-zsh.sh
 # Source autojump
 [[ -s /home/macuared/.autojump/etc/profile.d/autojump.sh ]] && source /home/macuared/.autojump/etc/profile.d/autojump.sh
 autoload -U compinit && compinit -u
+
+# FUNCTIONS
+# To use Chromaterm for ssh sessions
+ssh() {
+     /usr/bin/ssh "$@" | ct; 
+}
