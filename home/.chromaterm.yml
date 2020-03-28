@@ -20,7 +20,7 @@ rules:
       regex: "(set security policies) (from-zone [a-zA-Z0-9_-]+ )(to-zone [a-zA-Z0-9_-]+ )(policy [a-zA-Z0-9_-]+ )"
       color: 
           1: f#FFFFFF
-          2: f#FF0049 bold
+          2: f#C24B16 bold
           3: f#00F969 bold
           3: f#03DAC6 bold
           4: f#6CFF00 bold
