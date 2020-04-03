@@ -42,6 +42,12 @@ export PATH=~/.local/bin:$PATH
 # For TLDR
 export PATH=$PATH:~/bin
 
+# For using ctrl+shift+e Vscode
+# https://forum.manjaro.org/t/i-want-ibus-daemon-to-run-all-the-time/105414/3
+# https://github.com/microsoft/vscode/issues/48480#issuecomment-414181802
+export GTK_IM_MODULE="xim"
+ibus-daemon -drx
+
 
 # OTHERS
 # Dracula theme specific config.
