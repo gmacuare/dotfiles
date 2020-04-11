@@ -59,6 +59,8 @@ DRACULA_DISPLAY_TIME=1
 eval $(ssh-agent)
 
 
+# Remap Caps to Esc for VIM
+setxkbmap -option caps:swapescape
 
 # SOURCING FILES
 # Source custom aliases
@@ -77,3 +79,4 @@ autoload -U compinit && compinit -u
 ssh() {
      /usr/bin/ssh "$@" | ct; 
 }
+
