@@ -111,6 +111,8 @@ ZSH_COLORIZE_STYLE="colorful"
 # For Autojump to work https://github.com/wting/autojump/issues/196
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
+# For zsh-autosuggestion
+bindkey '^[' autosuggest-accept
 
 # SOURCING FILES
 source $HOME/.aliases
