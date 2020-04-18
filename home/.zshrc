@@ -9,6 +9,7 @@
 #ZSH_THEME="random"
 ZSH_THEME="dracula"
 
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
@@ -42,6 +43,12 @@ export PATH=~/.local/bin:$PATH
 # For TLDR
 export PATH=$PATH:~/bin
 
+# For using ctrl+shift+e Vscode
+# https://forum.manjaro.org/t/i-want-ibus-daemon-to-run-all-the-time/105414/3
+# https://github.com/microsoft/vscode/issues/48480#issuecomment-414181802
+export GTK_IM_MODULE="xim"
+ibus-daemon -drx
+
 
 # OTHERS
 # Dracula theme specific config.
@@ -52,7 +59,13 @@ DRACULA_DISPLAY_TIME=1
 # https://coderwall.com/p/rdi_wq/fix-could-not-open-a-connection-to-your-authentication-agent-when-using-ssh-add
 eval $(ssh-agent)
 
+# Remap Caps to Esc for VIM
+setxkbmap -option caps:swapescape
 
+# For zsh-autosuggestion to accept a suggestion word by word. https://github.com/zsh-users/zsh-autosuggestions/blob/master/src/config.zsh#L46
+# How to add keybinds for zsh widgets - https://github.com/zsh-users/zsh-syntax-highlighting/issues/411#issuecomment-317077561
+bindkey '^[' forward-word
+bindkey '^@' end-of-line
 
 # SOURCING FILES
 # Source custom aliases
@@ -71,3 +84,4 @@ autoload -U compinit && compinit -u
 ssh() {
      /usr/bin/ssh "$@" | ct; 
 }
+

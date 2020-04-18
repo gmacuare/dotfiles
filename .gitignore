@@ -1,5 +1,6 @@
 .vscode/
-*.json
+dotfiles.json
+db.json
 .ssh_config
 *.log
 __pycache__/

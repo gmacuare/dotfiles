@@ -2,6 +2,7 @@
 from argparse import ArgumentParser
 from datetime import date
 from getpass import getuser
+from itertools import cycle
 from json import dumps
 from pathlib import Path
 from pprint import pprint
@@ -43,8 +44,8 @@ def parse_arguments():
     description = "Symnlinks your system's dotfiles to your custom dotfiles"
     parser = ArgumentParser(description=description)
 
-    parser.add_argument("--env", "-e", nargs='+', choices=["globals", "work", 'home'],
-                        type=str, metavar="globals home", help="Choose your environment")
+    parser.add_argument("--env", "-e", nargs='+', type=str, metavar="globals home",
+                        help="Choose your environment")
     parser.add_argument("--print", "-p", action='store_true', default=True,
                         help="To print the dotfiles DB")
     parser.add_argument("--json", "-j", nargs="?", const="db.json", type=str,
@@ -176,7 +177,7 @@ def get_files_targets(files_locations):
     ~/.<dotfile_name>
     
     Args:
-        files_locations(list): Current files' location, excluding files in .dotignore 
+        files_locations(list): Current files' location, excluding files in .dotignore
         
     Return:
         files_targets (list): Targets where files will be symlinked to on each env"""
@@ -502,31 +503,18 @@ def create_row_tables(files_locations, files_targets, files_envs):
     return table_data
 
 
-def print_table(table_data):
+def print_table(table_data, files_envs):
     """Prints the dotfiles table
 
     Args:
         table_data (list of dicts): Returns a list of dictionaries. Each dict is a row
+        files_envs (list): Included environments associated to each dotfile
     
     Returns:
         None"""
 
-# THIS NEEDS TO BE DYNAMIC
-    HEADERS_C = None
-    GLOBAL_C = "yellow"
-    HOME_C = "green"
-    WORK_C = "cyan"
-
-    # colors = ["yellow", "red", "green", "cyan", "blue", "magenta", "white"]
-    # GLOBAL_C = choice(colors)
-    # HOME_C = choice(colors)
-    # WORK_C = choice(colors)
-
-    # id = colored("ID", HEADERS_C, attrs=["bold", "underline"])
-    # name = colored("NAME", HEADERS_C, attrs=["bold", "underline"])
-    # location = colored("LOCATION", HEADERS_C, attrs=["bold", "underline"])
-    # target = colored("TARGET", HEADERS_C, attrs=["bold", "underline"])
-    # env = colored("ENV", HEADERS_C, attrs=["bold", "underline"])
+    HEADERS_C = "yellow"
+    logging.debug(f"Table headers color: {HEADERS_C}")
 
     id = colored(HEADERS[0], HEADERS_C, attrs=["bold", "underline"])
     name = colored(HEADERS[1], HEADERS_C, attrs=["bold", "underline"])
@@ -538,23 +526,27 @@ def print_table(table_data):
     colored_table_data = table_data.copy()
     colored_table_data.insert(0, colored_headers)
 
-# THIS NEEDS TO BE DYNAMIC
-    for index, row in enumerate(colored_table_data[1:], start=1):
-        env = row[4]
-        if env == "globals":
-            color = GLOBAL_C
-        elif env == "home":
-            color = HOME_C
-        elif env == "work":
-            color = WORK_C
+    first_row_env = colored_table_data[1][4]
+    previous_dir = first_row_env
 
-        row_id = colored(str(row[0]), color)
+    colors = ["cyan", "green", "yellow"]
+    logging.debug(f"Table body colors: {colors}")
+    color_pool = cycle(colors)
+    color = next(color_pool)
+
+    for index, row in enumerate(colored_table_data[1:], start=1):
+        current_dir = row[4]
+
+        if previous_dir != current_dir:
+            color = next(color_pool)
+            previous_dir = current_dir
+
+        row_id = colored(str(row[0]), color) 
         row_name = colored(str(row[1]), color)
         row_loc = colored(str(row[2]), color)
         row_targ = colored(str(row[3]), color)
         row_env = colored(str(row[4]), color)
-        colored_table_data[index] = [
-            row_id, row_name, row_loc, row_targ, row_env]
+        colored_table_data[index] = [ row_id, row_name, row_loc, row_targ, row_env] 
 
     table = AsciiTable(colored_table_data)
     print(f'\nTABLE: ')
@@ -632,7 +624,7 @@ def main():
     if not selected_env:
         table_data = create_row_tables(
             files_locations, files_targets, files_envs)
-        print_table(table_data)
+        print_table(table_data, files_envs)
 
     # selected_env=["globals", "home"]
     if selected_env:
