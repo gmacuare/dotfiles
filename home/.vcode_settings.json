@@ -1,0 +1,31 @@
+# TARGET=~/.config/Code/User/settings.json 
+{
+    "window.zoomLevel": 1,
+    
+    "workbench.colorTheme": "Pitch Black",
+    "workbench.iconTheme": "ayu",
+    "workbench.settings.editor": "json",
+    "workbench.colorCustomizations": { "editorWhitespace.foreground": "#000"},
+    
+    "explorer.sortOrder": "type",
+    
+    "editor.lineNumbers": "relative",
+
+    "python.formatting.provider": "black",
+
+
+    "files.trimFinalNewlines": true,
+
+    "keyboard.dispatch": "keyCode",
+    "vim.easymotion": true,
+    "vim.easymotionMarkerBackgroundColor": "green",
+    "vim.easymotionMarkerFontFamily": "'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+    "vim.easymotionMarkerHeight": 19,
+    "vim.normalModeKeyBindings": [
+        {
+        "before": [" "],
+        "after": ["leader", "leader", "leader", "b", "d", "w"]
+        }
+    ],
+    "vim.useSystemClipboard": true
+}
