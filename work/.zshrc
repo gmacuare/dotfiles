@@ -112,7 +112,8 @@ ZSH_COLORIZE_STYLE="colorful"
 [[ -s `brew --prefix`/etc/autojump.sh ]] && . `brew --prefix`/etc/autojump.sh
 
 # For zsh-autosuggestion
-bindkey '^[' autosuggest-accept
+bindkey '^[' forward-word
+bindkey '^@' end-of-line
 
 # SOURCING FILES
 source $HOME/.aliases
