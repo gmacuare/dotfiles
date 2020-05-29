@@ -1,3 +1,5 @@
+"" A Description of the product ""
+
 # Dotfiles Management
 
 ## What's this about?
